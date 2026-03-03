@@ -3,7 +3,7 @@
 
 Bienvenido a mi repositorio **workspace**.
 
-Este espacio lo uso para practicar programación, guardar proyectos y mejorar mis habilidades como desarrollador.
+Este espacio lo uso para practicar programación, guardar proyectos y mejorar mis habilidades como desarrollador de software Y aprender mas sobre el mundo de la programacion
 
 ---
 
