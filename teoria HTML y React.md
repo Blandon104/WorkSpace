@@ -42,6 +42,26 @@ La estructura básica de un archivo HTML está compuesta principalmente por esta
 4. **`<strong>`**: sirve para destacar un texto importante, normalmente mostrándolo en negrita.
 5. **`<em>`**: sirve para darle énfasis a una parte del texto, normalmente mostrándola en cursiva.
 
+### ¿Cómo funciona un link en HTML?
+
+Un link o enlace permite llevar al usuario desde una página web hacia otra página, un sitio web, un archivo o incluso otra sección de la misma página. Para crear un enlace se utiliza principalmente la etiqueta `<a>`, conocida como etiqueta de ancla.
+
+El destino del enlace se coloca en el atributo `href`, mientras que el texto que puede pulsar el usuario se escribe entre la etiqueta de apertura y la etiqueta de cierre.
+
+```html
+<a href="https://www.ejemplo.com">Visitar página</a>
+```
+
+En este ejemplo, `<a>` crea el enlace, `href` indica hacia dónde debe dirigirse y `Visitar página` es el texto que verá y podrá pulsar el usuario.
+
+También se puede usar `target="_blank"` para abrir el enlace en una nueva pestaña:
+
+```html
+<a href="https://www.ejemplo.com" target="_blank">Abrir página</a>
+```
+
+Por lo tanto, las etiquetas y atributos principales para crear un link son **`<a>`** y **`href`**. El atributo **`target`** es opcional y sirve para controlar dónde se abre el enlace.
+
 ### Etiquetas comunes
 
 - `<h1>` a `<h6>`: títulos y subtítulos.
