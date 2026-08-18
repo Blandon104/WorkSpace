@@ -194,6 +194,88 @@ Aquí `Perfil` es un **componente de React**, mientras que `<div>`, `<h1>` y `<p
 
 En resumen, **HTML proporciona los elementos básicos de la interfaz y React permite organizarlos en componentes reutilizables y agregarles lógica y comportamiento**.
 
+### Tipos de variables en un componente de React
+
+Dentro de un componente de React se pueden encontrar diferentes tipos de valores y variables. Los más importantes son:
+
+1. **Variables locales:** se declaran normalmente con `const` o `let` dentro del componente. Sirven para realizar cálculos o guardar valores que se utilizan durante una renderización. Si cambia una variable local por sí sola, React no vuelve a renderizar el componente.
+2. **Props:** son valores que el componente recibe desde su componente padre. Se utilizan para enviar información hacia un componente hijo. Las props se consideran inmutables dentro del componente que las recibe.
+3. **State (estado):** son valores que React guarda para el componente y que pueden cambiar durante su funcionamiento. Cuando se actualizan mediante su función setter, React puede volver a renderizar el componente.
+4. **Variables constantes externas:** también se pueden utilizar valores definidos fuera del componente, por ejemplo, constantes que no dependen de una renderización específica.
+
+Ejemplo:
+
+```jsx
+import { useState } from "react";
+
+const titulo = "Mi aplicación";
+
+function Perfil({ nombre }) {
+  const mensaje = "Bienvenido";
+  const [edad, setEdad] = useState(17);
+
+  return (
+    <div>
+      <h1>{titulo}</h1>
+      <p>{mensaje}, {nombre}</p>
+      <p>Edad: {edad}</p>
+      <button onClick={() => setEdad(edad + 1)}>Aumentar edad</button>
+    </div>
+  );
+}
+```
+
+En este ejemplo, `titulo` es una constante externa, `mensaje` es una variable local, `nombre` es una prop y `edad` es una variable de estado.
+
+### ¿Qué son los Props de un componente?
+
+Los **props** son datos que un componente recibe desde otro componente, normalmente desde su componente padre. Permiten que un mismo componente sea reutilizable y muestre información diferente dependiendo de los datos que recibe.
+
+Por ejemplo:
+
+```jsx
+function Usuario({ nombre }) {
+  return <p>Hola, {nombre}</p>;
+}
+
+function App() {
+  return <Usuario nombre="Alejandro" />;
+}
+```
+
+En este caso, `nombre` es un prop. El componente `App` se lo envía a `Usuario`, y `Usuario` lo utiliza para mostrar el texto correspondiente.
+
+Las props pueden contener diferentes tipos de valores, como textos, números, booleanos, arreglos, objetos e incluso funciones. El componente que recibe las props no debe modificarlas directamente; si necesita un valor diferente, debe recibir nuevas props o utilizar su propio estado.
+
+### ¿Qué es useState?
+
+`useState` es un **Hook de React** que permite agregar una variable de estado a un componente funcional. React guarda ese estado entre las diferentes renderizaciones del componente. `useState` devuelve dos valores: el estado actual y una función para actualizarlo. citeturn0search0turn0search3
+
+La forma básica de utilizarlo es:
+
+```jsx
+import { useState } from "react";
+
+function Contador() {
+  const [contador, setContador] = useState(0);
+
+  return (
+    <button onClick={() => setContador(contador + 1)}>
+      Contador: {contador}
+    </button>
+  );
+}
+```
+
+Aquí:
+
+- `contador` es la variable que contiene el estado actual.
+- `setContador` es la función utilizada para actualizar el estado.
+- `useState(0)` establece `0` como valor inicial.
+- Al llamar a `setContador`, React programa una nueva renderización para mostrar el nuevo valor. citeturn0search0
+
+El estado puede guardar diferentes tipos de datos, como números, textos, valores booleanos, arreglos u objetos. No se debe modificar directamente la variable de estado; se debe utilizar la función setter proporcionada por `useState`. citeturn0search2turn0search6
+
 ### Conceptos principales
 
 - **Componentes:** piezas independientes y reutilizables de la interfaz.
