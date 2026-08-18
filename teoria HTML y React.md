@@ -85,6 +85,59 @@ Los atributos proporcionan información adicional a las etiquetas. Algunos ejemp
 <img src="imagen.jpg" alt="Descripción de la imagen">
 ```
 
+## CSS
+
+CSS (Cascading Style Sheets) es el lenguaje que se utiliza para definir la apariencia y presentación de una página web. Permite cambiar aspectos como colores, tamaños, fuentes, espacios y posiciones de los elementos. En pocas palabras, HTML organiza el contenido y CSS se encarga de darle estilo.
+
+### Selectores CSS
+
+Los selectores CSS son patrones que permiten elegir qué elementos HTML serán modificados por una regla de estilo. citeturn0search5
+
+Los selectores más utilizados son:
+
+- **Selector de etiqueta:** selecciona todos los elementos de un tipo. Ejemplo: `p { color: blue; }` modifica todos los párrafos.
+- **Selector de clase:** comienza con `.` y selecciona los elementos que tienen esa clase. Ejemplo: `.titulo { color: red; }`.
+- **Selector de ID:** comienza con `#` y selecciona el elemento que tiene ese ID. Ejemplo: `#principal { background: gray; }`.
+- **Selector universal:** `*` selecciona todos los elementos.
+- **Selector de atributo:** selecciona elementos según uno de sus atributos. Ejemplo: `input[type="text"] { ... }`.
+- **Selector de descendientes:** permite seleccionar elementos que están dentro de otro elemento. Ejemplo: `div p { color: green; }` selecciona los párrafos que están dentro de un `div`.
+
+También se pueden agrupar varios selectores separados por comas cuando deben compartir las mismas reglas. citeturn0search3
+
+```css
+h1, h2, p {
+  font-family: Arial, sans-serif;
+}
+```
+
+### ¿Cómo puede una etiqueta ser modificada por múltiples selectores CSS?
+
+Una misma etiqueta HTML puede coincidir con varios selectores CSS al mismo tiempo. Cuando ocurre esto, el navegador utiliza la **cascada** y la **especificidad** para decidir qué valor aplicar cuando diferentes reglas intentan modificar la misma propiedad. citeturn0search0turn0search2
+
+Por ejemplo:
+
+```html
+<p id="texto" class="importante">Hola mundo</p>
+```
+
+```css
+p {
+  color: blue;
+}
+
+.importante {
+  color: green;
+}
+
+#texto {
+  color: red;
+}
+```
+
+Los tres selectores coinciden con el mismo `<p>`, pero no todos tienen la misma especificidad. En este caso, el selector de ID (`#texto`) tiene mayor especificidad que el selector de clase (`.importante`) y que el selector de etiqueta (`p`), por lo que el texto termina siendo rojo. citeturn0search0
+
+Si dos reglas tienen la misma especificidad y afectan la misma propiedad, normalmente prevalece la que aparece después en el CSS. citeturn0search4
+
 ## React
 
 React es una biblioteca de JavaScript utilizada para construir interfaces de usuario mediante componentes reutilizables.
