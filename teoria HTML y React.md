@@ -4,6 +4,20 @@
 
 HTML (HyperText Markup Language) es el lenguaje de marcado utilizado para estructurar el contenido de una página web.
 
+### ¿Qué es una etiqueta de HTML?
+
+Una etiqueta de HTML es una instrucción que le indica al navegador qué tipo de elemento debe mostrar en una página web. Se escribe normalmente entre los símbolos `<` y `>`. Por ejemplo, la etiqueta `<p>` se utiliza para crear un párrafo.
+
+### ¿Qué etiquetas componen la estructura de un archivo HTML?
+
+La estructura básica de un archivo HTML está compuesta principalmente por estas etiquetas:
+
+- `<!DOCTYPE html>`: indica que el documento utiliza HTML5.
+- `<html>`: contiene todo el contenido de la página web.
+- `<head>`: contiene información de configuración y metadatos de la página.
+- `<title>`: establece el título que aparece en la pestaña del navegador.
+- `<body>`: contiene todo el contenido que el usuario puede ver en la página.
+
 ### Estructura básica
 
 ```html
@@ -19,6 +33,14 @@ HTML (HyperText Markup Language) es el lenguaje de marcado utilizado para estruc
 </body>
 </html>
 ```
+
+### 5 etiquetas de texto en HTML
+
+1. **`<h1>`**: se utiliza para colocar el título principal de una página.
+2. **`<h2>`**: sirve para crear subtítulos o títulos de segundo nivel.
+3. **`<p>`**: se utiliza para escribir párrafos de texto.
+4. **`<strong>`**: sirve para destacar un texto importante, normalmente mostrándolo en negrita.
+5. **`<em>`**: sirve para darle énfasis a una parte del texto, normalmente mostrándola en cursiva.
 
 ### Etiquetas comunes
 
