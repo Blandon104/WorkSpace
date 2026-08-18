@@ -274,7 +274,42 @@ Aquí:
 - `useState(0)` establece `0` como valor inicial.
 - Al llamar a `setContador`, React programa una nueva renderización para mostrar el nuevo valor. citeturn0search0
 
-El estado puede guardar diferentes tipos de datos, como números, textos, valores booleanos, arreglos u objetos. No se debe modificar directamente la variable de estado; se debe utilizar la función setter proporcionada por `useState`. citeturn0search2turn0search6
+El estado puede guardar diferentes tipos de datos, como números, textos, valores booleanos, arreglos u objetos. No se debe modificar directamente la variable de estado; se debe utilizar la función setter proporcionada por `useState`. citeturn0search3
+
+### ¿Qué es useEffect?
+
+`useEffect` es un **Hook de React** que permite ejecutar un efecto y mantener sincronizado un componente con un sistema externo, como una API, una conexión, una biblioteca externa o determinadas funciones del navegador. También puede utilizar una lista de dependencias para indicar cuándo debe volver a ejecutarse. citeturn0search2
+
+Ejemplo:
+
+```jsx
+import { useEffect } from "react";
+
+function Ejemplo() {
+  useEffect(() => {
+    console.log("El componente se ha renderizado");
+  }, []);
+
+  return <h1>Hola</h1>;
+}
+```
+
+En este ejemplo, `[]` es una lista de dependencias vacía, por lo que el efecto se ejecuta después del montaje inicial del componente. Cuando se utilizan dependencias, React vuelve a ejecutar el efecto después de un renderizado cuando alguna de esas dependencias ha cambiado. citeturn0search2
+
+Es importante no utilizar `useEffect` simplemente para calcular valores que ya pueden obtenerse durante el renderizado. React recomienda reservar los Effects para sincronizarse con sistemas externos cuando realmente sea necesario. citeturn0search6
+
+### Diferencia entre useState y useEffect
+
+Aunque ambos son Hooks de React, tienen funciones diferentes:
+
+| `useState` | `useEffect` |
+|---|---|
+| Sirve para guardar y actualizar datos del estado. | Sirve para ejecutar efectos y sincronizar el componente con sistemas externos. |
+| Devuelve el estado actual y una función para actualizarlo. | Recibe una función de efecto y, opcionalmente, una lista de dependencias. |
+| Al actualizar el estado, React puede volver a renderizar el componente. | Se ejecuta después de que React realiza el commit del componente y según sus dependencias. |
+| Ejemplo: guardar un contador, nombre o selección. | Ejemplo: conectarse a una API, suscribirse a un sistema externo o interactuar con una API del navegador. |
+
+Una forma sencilla de recordarlo es: **`useState` guarda información que puede cambiar; `useEffect` permite realizar acciones que necesitan sincronizarse con algo externo al flujo normal de renderizado de React.** citeturn0search0turn0search2
 
 ### Conceptos principales
 
