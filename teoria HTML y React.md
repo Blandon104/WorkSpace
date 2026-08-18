@@ -91,7 +91,7 @@ CSS (Cascading Style Sheets) es el lenguaje que se utiliza para definir la apari
 
 ### Selectores CSS
 
-Los selectores CSS son patrones que permiten elegir qué elementos HTML serán modificados por una regla de estilo. citeturn0search5
+Los selectores CSS son patrones que permiten elegir qué elementos HTML serán modificados por una regla de estilo.
 
 Los selectores más utilizados son:
 
@@ -102,7 +102,7 @@ Los selectores más utilizados son:
 - **Selector de atributo:** selecciona elementos según uno de sus atributos. Ejemplo: `input[type="text"] { ... }`.
 - **Selector de descendientes:** permite seleccionar elementos que están dentro de otro elemento. Ejemplo: `div p { color: green; }` selecciona los párrafos que están dentro de un `div`.
 
-También se pueden agrupar varios selectores separados por comas cuando deben compartir las mismas reglas. citeturn0search3
+También se pueden agrupar varios selectores separados por comas cuando deben compartir las mismas reglas.
 
 ```css
 h1, h2, p {
@@ -112,7 +112,7 @@ h1, h2, p {
 
 ### ¿Cómo puede una etiqueta ser modificada por múltiples selectores CSS?
 
-Una misma etiqueta HTML puede coincidir con varios selectores CSS al mismo tiempo. Cuando ocurre esto, el navegador utiliza la **cascada** y la **especificidad** para decidir qué valor aplicar cuando diferentes reglas intentan modificar la misma propiedad. citeturn0search0turn0search2
+Una misma etiqueta HTML puede coincidir con varios selectores CSS al mismo tiempo. Cuando ocurre esto, el navegador utiliza la **cascada** y la **especificidad** para decidir qué valor aplicar cuando diferentes reglas intentan modificar la misma propiedad.
 
 Por ejemplo:
 
@@ -134,13 +134,65 @@ p {
 }
 ```
 
-Los tres selectores coinciden con el mismo `<p>`, pero no todos tienen la misma especificidad. En este caso, el selector de ID (`#texto`) tiene mayor especificidad que el selector de clase (`.importante`) y que el selector de etiqueta (`p`), por lo que el texto termina siendo rojo. citeturn0search0
+Los tres selectores coinciden con el mismo `<p>`, pero no todos tienen la misma especificidad. En este caso, el selector de ID (`#texto`) tiene mayor especificidad que el selector de clase (`.importante`) y que el selector de etiqueta (`p`), por lo que el texto termina siendo rojo.
 
-Si dos reglas tienen la misma especificidad y afectan la misma propiedad, normalmente prevalece la que aparece después en el CSS. citeturn0search4
+Si dos reglas tienen la misma especificidad y afectan la misma propiedad, normalmente prevalece la que aparece después en el CSS.
 
 ## React
 
 React es una biblioteca de JavaScript utilizada para construir interfaces de usuario mediante componentes reutilizables.
+
+### ¿Qué es un componente de React?
+
+Un componente de React es una parte independiente y reutilizable de una interfaz. Normalmente se crea mediante una función de JavaScript que devuelve JSX, es decir, una estructura que describe qué elementos se deben mostrar en pantalla.
+
+Los componentes permiten dividir una aplicación grande en partes pequeñas y fáciles de organizar. Por ejemplo, una página podría tener componentes como `Header`, `Menu`, `TarjetaProducto` y `Footer`.
+
+```jsx
+function Saludo() {
+  return <h1>Hola mundo</h1>;
+}
+
+export default Saludo;
+```
+
+En este ejemplo, `Saludo` es un componente porque es una función que devuelve una parte de la interfaz. Además, puede reutilizarse dentro de otros componentes.
+
+### Relación entre los componentes de React y las etiquetas HTML
+
+Los componentes de React y las etiquetas HTML se parecen porque ambos sirven para construir la interfaz que el usuario ve. Dentro de un componente de React se pueden utilizar etiquetas HTML mediante JSX, como `<div>`, `<h1>`, `<p>` y `<button>`.
+
+Por ejemplo:
+
+```jsx
+function Perfil() {
+  return (
+    <div>
+      <h1>Alejandro</h1>
+      <p>Estudiante de desarrollo web</p>
+    </div>
+  );
+}
+```
+
+Aquí `Perfil` es un **componente de React**, mientras que `<div>`, `<h1>` y `<p>` son **elementos escritos con sintaxis JSX que representan elementos HTML**.
+
+### Parecidos
+
+- Ambos ayudan a construir la interfaz de una página o aplicación.
+- Los componentes pueden contener varias etiquetas HTML.
+- JSX permite escribir etiquetas con una sintaxis muy parecida a HTML.
+- Tanto los componentes como las etiquetas pueden organizar el contenido de una interfaz.
+
+### Diferencias
+
+- Una **etiqueta HTML** es un elemento definido por el estándar HTML, como `<p>` o `<button>`.
+- Un **componente de React** es una unidad de código creada por el desarrollador que puede combinar elementos, lógica y datos.
+- Las etiquetas HTML por sí solas no tienen el concepto de estado de React; los componentes pueden utilizar `state` y otros recursos de React.
+- Los componentes pueden recibir **props**, que permiten enviarles información desde otros componentes.
+- Un componente puede reutilizarse muchas veces y cada instancia puede trabajar con datos diferentes.
+
+En resumen, **HTML proporciona los elementos básicos de la interfaz y React permite organizarlos en componentes reutilizables y agregarles lógica y comportamiento**.
 
 ### Conceptos principales
 
