@@ -8,19 +8,25 @@
 </head>
 <body>
 
-  <!-- RECORDATE: Sistema Recordatorio de Actividades Académicas -->
+  <!--
+    PPI: RECORDATE - Sistema Recordatorio de Actividades Académicas
 
-  <!-- El menú solo aparece cuando existe una sesión activa. -->
+    Requisitos:
+    1. Primero iniciar sesión.
+    2. Los elementos del menú aparecen o desaparecen según la sesión.
+    3. El menú cambia dependiendo del usuario/rol.
+    4. Los componentes todavía están en construcción.
+    5. Supabase queda preparado para la autenticación real.
+  -->
+
+  <!-- MENÚ: oculto mientras no haya sesión -->
   <nav id="navbar" class="navbar navbar-expand-lg bg-body-tertiary d-none">
     <div class="container-fluid">
       <a class="navbar-brand" href="#appSection">RECORDATE</a>
-
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
         <span class="navbar-toggler-icon"></span>
       </button>
-
       <div class="collapse navbar-collapse" id="menuPrincipal">
-        <!-- Los elementos se generan dinámicamente según el rol. -->
         <ul id="menu" class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
         <span id="usuarioActual" class="navbar-text me-3"></span>
         <button id="btnCerrarSesion" class="btn btn-outline-danger">Cerrar sesión</button>
@@ -29,25 +35,23 @@
   </nav>
 
   <main class="container py-5">
-    <!-- Esta sección aparece mientras NO hay una sesión iniciada. -->
+    <!-- PRIMERO: INICIAR SESIÓN -->
     <section id="loginSection" class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
         <div class="card shadow-sm">
           <div class="card-body">
-            <h1 class="h3 text-center mb-4">Iniciar sesión</h1>
+            <h1 class="h3 text-center mb-2">RECORDATE</h1>
+            <p class="text-center text-muted mb-4">Primero debes iniciar sesión</p>
 
             <form id="loginForm">
               <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
                 <input type="email" class="form-control" id="email" required>
               </div>
-
               <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="password" required>
               </div>
-
-              <!-- Rol temporal para probar el menú dinámico. -->
               <div class="mb-3">
                 <label for="rol" class="form-label">Rol de prueba</label>
                 <select id="rol" class="form-select" required>
@@ -56,20 +60,19 @@
                   <option value="administrador">Administrador</option>
                 </select>
               </div>
-
               <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
               <p id="mensajeLogin" class="text-danger mt-3 mb-0"></p>
             </form>
 
-            <p class="text-muted small mt-3 mb-0">
-              La autenticación real se conectará posteriormente con Supabase.
-            </p>
+            <div class="alert alert-info mt-4 mb-0 small">
+              <strong>Supabase:</strong> la autenticación real se conectará posteriormente. El rol actual es temporal para probar el menú dinámico.
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Esta sección y el menú desaparecen al cerrar sesión. -->
+    <!-- CONTENIDO PROTEGIDO: solo aparece con sesión -->
     <section id="appSection" class="d-none">
       <div class="text-center mb-5">
         <h1>Bienvenido a RECORDATE</h1>
@@ -77,37 +80,8 @@
         <span id="rolActual" class="badge text-bg-primary"></span>
       </div>
 
-      <div class="row g-4">
-        <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <h2 class="h5">Actividades</h2>
-              <p>Gestión de tareas, fechas y prioridades.</p>
-              <span class="badge text-bg-warning">En construcción</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <h2 class="h5">Recordatorios</h2>
-              <p>Configuración de alarmas y notificaciones.</p>
-              <span class="badge text-bg-warning">En construcción</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <h2 class="h5">Perfil</h2>
-              <p>Información y configuración del usuario.</p>
-              <span class="badge text-bg-warning">En construcción</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Todos los componentes están en construcción -->
+      <div id="componentes" class="row g-4"></div>
     </section>
   </main>
 
@@ -116,38 +90,25 @@
   </footer>
 
   <script>
-    /*
-      MENÚ DINÁMICO
-      - Sin iniciar sesión: el menú privado desaparece.
-      - Con sesión iniciada: aparecen las opciones correspondientes al rol.
-      - Al cerrar sesión: todos los elementos privados vuelven a desaparecer.
-      - La selección de rol es temporal; después se obtendrá desde Supabase.
-    */
+    // Menú diferente para cada usuario/rol.
     const menusPorRol = {
-      estudiante: [
-        'Inicio',
-        'Mis actividades',
-        'Recordatorios',
-        'Mi perfil'
-      ],
-      trabajador: [
-        'Inicio',
-        'Actividades',
-        'Recordatorios',
-        'Mi perfil'
-      ],
-      administrador: [
-        'Inicio',
-        'Usuarios',
-        'Actividades',
-        'Administración'
-      ]
+      estudiante: ['Inicio', 'Mis actividades', 'Recordatorios', 'Mi perfil'],
+      trabajador: ['Inicio', 'Actividades', 'Recordatorios', 'Mi perfil'],
+      administrador: ['Inicio', 'Usuarios', 'Actividades', 'Administración']
+    };
+
+    // Componentes que se muestran como "En construcción".
+    const componentesPorRol = {
+      estudiante: ['Mis actividades', 'Recordatorios', 'Mi perfil'],
+      trabajador: ['Actividades', 'Recordatorios', 'Mi perfil'],
+      administrador: ['Usuarios', 'Actividades', 'Administración']
     };
 
     const loginSection = document.getElementById('loginSection');
     const appSection = document.getElementById('appSection');
     const navbar = document.getElementById('navbar');
     const menu = document.getElementById('menu');
+    const componentes = document.getElementById('componentes');
     const usuarioActual = document.getElementById('usuarioActual');
     const rolActual = document.getElementById('rolActual');
     const loginForm = document.getElementById('loginForm');
@@ -156,30 +117,39 @@
 
     function mostrarMenu(rol) {
       menu.innerHTML = '';
-
-      const opciones = menusPorRol[rol] || [];
-
-      opciones.forEach(texto => {
+      (menusPorRol[rol] || []).forEach(texto => {
         const li = document.createElement('li');
         li.className = 'nav-item';
-
         const enlace = document.createElement('a');
         enlace.className = 'nav-link';
-        enlace.href = '#appSection';
+        enlace.href = '#componentes';
         enlace.textContent = texto;
-
         li.appendChild(enlace);
         menu.appendChild(li);
+      });
+    }
+
+    function mostrarComponentes(rol) {
+      componentes.innerHTML = '';
+      (componentesPorRol[rol] || []).forEach(nombre => {
+        componentes.innerHTML += `
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h2 class="h5">${nombre}</h2>
+                <p>Este componente forma parte de RECORDATE y actualmente se encuentra en desarrollo.</p>
+                <span class="badge text-bg-warning">En construcción</span>
+              </div>
+            </div>
+          </div>`;
       });
     }
 
     function actualizarInterfazSesion(sesion) {
       const haySesion = Boolean(sesion);
 
-      // Login visible solamente cuando NO hay sesión.
+      // Sin sesión: login visible y menú/contenido ocultos.
       loginSection.classList.toggle('d-none', haySesion);
-
-      // Contenido y menú visibles solamente cuando HAY sesión.
       appSection.classList.toggle('d-none', !haySesion);
       navbar.classList.toggle('d-none', !haySesion);
 
@@ -187,9 +157,11 @@
         usuarioActual.textContent = sesion.email;
         rolActual.textContent = `Rol: ${sesion.rol}`;
         mostrarMenu(sesion.rol);
+        mostrarComponentes(sesion.rol);
       } else {
-        // Al cerrar sesión, eliminar inmediatamente los elementos del menú.
+        // Al cerrar sesión desaparecen inmediatamente los elementos privados.
         menu.innerHTML = '';
+        componentes.innerHTML = '';
         usuarioActual.textContent = '';
         rolActual.textContent = '';
       }
@@ -210,7 +182,6 @@
 
     loginForm.addEventListener('submit', event => {
       event.preventDefault();
-
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const rol = document.getElementById('rol').value;
@@ -226,15 +197,18 @@
 
     btnCerrarSesion.addEventListener('click', cerrarSesion);
 
-    // Si existe una sesión guardada, mostrar directamente el menú correspondiente.
+    // Recuperar la sesión temporal durante el desarrollo.
     const sesionGuardada = sessionStorage.getItem('recordateSesion');
-
     if (sesionGuardada) {
       try {
-        actualizarInterfazSesion(JSON.parse(sesionGuardada));
+        const sesion = JSON.parse(sesionGuardada);
+        if (sesion.email && menusPorRol[sesion.rol]) {
+          actualizarInterfazSesion(sesion);
+        } else {
+          cerrarSesion();
+        }
       } catch (error) {
-        sessionStorage.removeItem('recordateSesion');
-        actualizarInterfazSesion(null);
+        cerrarSesion();
       }
     } else {
       actualizarInterfazSesion(null);
