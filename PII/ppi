@@ -8,24 +8,19 @@
 </head>
 <body>
 
-  <!--
-    PPI: RECORDATE - Sistema Recordatorio de Actividades Académicas
-    Requisitos implementados en esta etapa:
-    - Primero iniciar sesión.
-    - El menú aparece después de iniciar sesión.
-    - Las opciones del menú cambian según el rol.
-    - Todos los módulos que todavía no están desarrollados muestran "En construcción".
-    - La autenticación real con Supabase queda preparada para integrarse posteriormente.
-  -->
+  <!-- RECORDATE: Sistema Recordatorio de Actividades Académicas -->
 
+  <!-- El menú solo aparece cuando existe una sesión activa. -->
   <nav id="navbar" class="navbar navbar-expand-lg bg-body-tertiary d-none">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">RECORDATE</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+      <a class="navbar-brand" href="#appSection">RECORDATE</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="menuPrincipal">
+        <!-- Los elementos se generan dinámicamente según el rol. -->
         <ul id="menu" class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
         <span id="usuarioActual" class="navbar-text me-3"></span>
         <button id="btnCerrarSesion" class="btn btn-outline-danger">Cerrar sesión</button>
@@ -34,7 +29,7 @@
   </nav>
 
   <main class="container py-5">
-    <!-- Inicio de sesión: es la primera pantalla que ve el usuario -->
+    <!-- Esta sección aparece mientras NO hay una sesión iniciada. -->
     <section id="loginSection" class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
         <div class="card shadow-sm">
@@ -52,6 +47,7 @@
                 <input type="password" class="form-control" id="password" required>
               </div>
 
+              <!-- Rol temporal para probar el menú dinámico. -->
               <div class="mb-3">
                 <label for="rol" class="form-label">Rol de prueba</label>
                 <select id="rol" class="form-select" required>
@@ -73,7 +69,7 @@
       </div>
     </section>
 
-    <!-- Contenido protegido: solo aparece después del login -->
+    <!-- Esta sección y el menú desaparecen al cerrar sesión. -->
     <section id="appSection" class="d-none">
       <div class="text-center mb-5">
         <h1>Bienvenido a RECORDATE</h1>
@@ -121,29 +117,30 @@
 
   <script>
     /*
-      Menú por rol.
-      Esta versión utiliza roles de prueba para desarrollar la interfaz.
-      En la versión final, el rol debe obtenerse desde Supabase después de
-      autenticar al usuario.
+      MENÚ DINÁMICO
+      - Sin iniciar sesión: el menú privado desaparece.
+      - Con sesión iniciada: aparecen las opciones correspondientes al rol.
+      - Al cerrar sesión: todos los elementos privados vuelven a desaparecer.
+      - La selección de rol es temporal; después se obtendrá desde Supabase.
     */
     const menusPorRol = {
       estudiante: [
-        { texto: 'Inicio', seccion: 'appSection' },
-        { texto: 'Mis actividades', seccion: 'appSection' },
-        { texto: 'Recordatorios', seccion: 'appSection' },
-        { texto: 'Mi perfil', seccion: 'appSection' }
+        'Inicio',
+        'Mis actividades',
+        'Recordatorios',
+        'Mi perfil'
       ],
       trabajador: [
-        { texto: 'Inicio', seccion: 'appSection' },
-        { texto: 'Actividades', seccion: 'appSection' },
-        { texto: 'Recordatorios', seccion: 'appSection' },
-        { texto: 'Mi perfil', seccion: 'appSection' }
+        'Inicio',
+        'Actividades',
+        'Recordatorios',
+        'Mi perfil'
       ],
       administrador: [
-        { texto: 'Inicio', seccion: 'appSection' },
-        { texto: 'Usuarios', seccion: 'appSection' },
-        { texto: 'Actividades', seccion: 'appSection' },
-        { texto: 'Administración', seccion: 'appSection' }
+        'Inicio',
+        'Usuarios',
+        'Actividades',
+        'Administración'
       ]
     };
 
@@ -160,39 +157,55 @@
     function mostrarMenu(rol) {
       menu.innerHTML = '';
 
-      menusPorRol[rol].forEach(item => {
+      const opciones = menusPorRol[rol] || [];
+
+      opciones.forEach(texto => {
         const li = document.createElement('li');
         li.className = 'nav-item';
 
-        const a = document.createElement('a');
-        a.className = 'nav-link';
-        a.href = '#appSection';
-        a.textContent = item.texto;
+        const enlace = document.createElement('a');
+        enlace.className = 'nav-link';
+        enlace.href = '#appSection';
+        enlace.textContent = texto;
 
-        li.appendChild(a);
+        li.appendChild(enlace);
         menu.appendChild(li);
       });
     }
 
+    function actualizarInterfazSesion(sesion) {
+      const haySesion = Boolean(sesion);
+
+      // Login visible solamente cuando NO hay sesión.
+      loginSection.classList.toggle('d-none', haySesion);
+
+      // Contenido y menú visibles solamente cuando HAY sesión.
+      appSection.classList.toggle('d-none', !haySesion);
+      navbar.classList.toggle('d-none', !haySesion);
+
+      if (haySesion) {
+        usuarioActual.textContent = sesion.email;
+        rolActual.textContent = `Rol: ${sesion.rol}`;
+        mostrarMenu(sesion.rol);
+      } else {
+        // Al cerrar sesión, eliminar inmediatamente los elementos del menú.
+        menu.innerHTML = '';
+        usuarioActual.textContent = '';
+        rolActual.textContent = '';
+      }
+    }
+
     function iniciarSesion(email, rol) {
-      loginSection.classList.add('d-none');
-      appSection.classList.remove('d-none');
-      navbar.classList.remove('d-none');
-
-      usuarioActual.textContent = email;
-      rolActual.textContent = `Rol: ${rol}`;
-      mostrarMenu(rol);
-
-      sessionStorage.setItem('recordateSesion', JSON.stringify({ email, rol }));
+      const sesion = { email, rol };
+      sessionStorage.setItem('recordateSesion', JSON.stringify(sesion));
+      actualizarInterfazSesion(sesion);
     }
 
     function cerrarSesion() {
       sessionStorage.removeItem('recordateSesion');
-      appSection.classList.add('d-none');
-      navbar.classList.add('d-none');
-      loginSection.classList.remove('d-none');
       loginForm.reset();
-      menu.innerHTML = '';
+      mensajeLogin.textContent = '';
+      actualizarInterfazSesion(null);
     }
 
     loginForm.addEventListener('submit', event => {
@@ -213,11 +226,18 @@
 
     btnCerrarSesion.addEventListener('click', cerrarSesion);
 
-    // Recuperar sesión mientras se desarrolla el proyecto.
+    // Si existe una sesión guardada, mostrar directamente el menú correspondiente.
     const sesionGuardada = sessionStorage.getItem('recordateSesion');
+
     if (sesionGuardada) {
-      const sesion = JSON.parse(sesionGuardada);
-      iniciarSesion(sesion.email, sesion.rol);
+      try {
+        actualizarInterfazSesion(JSON.parse(sesionGuardada));
+      } catch (error) {
+        sessionStorage.removeItem('recordateSesion');
+        actualizarInterfazSesion(null);
+      }
+    } else {
+      actualizarInterfazSesion(null);
     }
   </script>
 
