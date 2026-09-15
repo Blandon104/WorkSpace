@@ -1,10 +1,10 @@
 # Taller: Publicación de proyectos React + Supabase
 
-## Introducción
+**Estudiante:** Jose Alejandro Blandon Garcia — 11-2  
+**Repositorio:** `Blandon104/WorkSpace`  
+**Entregable:** `docs/despliegue.md`
 
-Este documento resume con mis propias palabras los conceptos necesarios para publicar un proyecto hecho con React y Supabase. También dejo una guía para llevar una aplicación de Vite + React a GitHub Pages.
-
-> **Nota:** los comandos `nslookup` y `dig` que pide el taller deben ejecutarse en mi computador. No invento sus salidas: dejo el espacio para pegar la salida real después de ejecutarlos.
+> Las respuestas están redactadas con mis propias palabras. Los precios y límites que pueden cambiar se consultaron en documentación oficial.
 
 ---
 
@@ -12,130 +12,75 @@ Este documento resume con mis propias palabras los conceptos necesarios para pub
 
 ## 1. Cómo llega un usuario a mi sitio
 
-Cuando una persona escribe una URL en el navegador, primero el navegador necesita saber qué servidor corresponde al dominio. Para eso consulta DNS. Después establece una conexión de red con el servidor. En una conexión HTTPS se realiza además el proceso TLS para comprobar el certificado y proteger la comunicación. Finalmente el navegador envía una petición HTTP, el servidor responde con recursos como HTML, CSS y JavaScript, y el navegador los interpreta para mostrar la página.
+Cuando una persona escribe una URL, el navegador primero identifica el dominio y consulta DNS para conocer la dirección IP correspondiente. Después establece la conexión de red. En HTTPS se realiza el handshake TLS para negociar el cifrado y comprobar el certificado. Luego se envía una petición HTTP, normalmente `GET`, y el servidor devuelve una respuesta con un código de estado y los recursos solicitados. El navegador descarga HTML, CSS, JavaScript, imágenes y demás recursos y finalmente construye la página.
 
 ### Paso a paso
 
-1. El usuario escribe una URL, por ejemplo `https://github.com`.
-2. El navegador identifica el dominio y consulta DNS para encontrar una dirección IP.
-3. Se establece una conexión TCP con el servidor.
-4. Como la conexión es HTTPS, se realiza el handshake TLS. En esta etapa se negocia la seguridad y se valida el certificado.
-5. El navegador envía una petición HTTP, por ejemplo una petición `GET`.
-6. El servidor devuelve una respuesta HTTP con un código de estado y el contenido solicitado.
-7. El navegador descarga los recursos adicionales, como CSS, JavaScript, imágenes y fuentes.
-8. Finalmente construye y muestra la página.
+1. El usuario escribe una URL.
+2. El navegador consulta DNS para resolver el dominio.
+3. Se establece TCP cuando HTTP/1.1 o HTTP/2 se transportan sobre TCP.
+4. Para HTTPS se realiza el handshake TLS y se valida el certificado.
+5. El navegador envía una petición HTTP.
+6. El servidor responde con un estado y contenido.
+7. Se descargan los recursos adicionales.
+8. El navegador ejecuta el JavaScript y muestra la interfaz.
 
 ### Partes de una URL
 
-Ejemplo:
+Ejemplo: `https://app.ejemplo.com:443/usuarios?rol=estudiante#perfil`
 
-`https://app.ejemplo.com:443/usuarios?rol=estudiante#perfil`
-
-- **Esquema:** `https` indica el protocolo utilizado.
-- **Subdominio:** `app` identifica una parte específica del sitio.
-- **Dominio:** `ejemplo` identifica el nombre registrado.
-- **TLD:** `.com` es la extensión de nivel superior.
-- **Puerto:** `443` es el puerto habitual de HTTPS. Normalmente el navegador no necesita mostrarlo.
-- **Ruta:** `/usuarios` indica el recurso solicitado.
-- **Query string:** `?rol=estudiante` contiene parámetros enviados en la URL.
-- **Fragmento:** `#perfil` apunta a una sección concreta de la página.
+- **Esquema:** `https`.
+- **Subdominio:** `app`.
+- **Dominio:** `ejemplo`.
+- **TLD:** `.com`.
+- **Puerto:** `443`, habitual para HTTPS.
+- **Ruta:** `/usuarios`.
+- **Query string:** `?rol=estudiante`.
+- **Fragmento:** `#perfil`, procesado normalmente por el navegador.
 
 ### Dominio, subdominio y hosting
 
-Un **dominio** es el nombre que identifica un sitio en Internet. Un **subdominio** es una parte adicional del dominio, como `app.ejemplo.com` o `www.ejemplo.com`. El **hosting** es el servicio o infraestructura donde se almacenan y sirven los archivos de la aplicación.
-
-Se pueden contratar por separado porque cumplen funciones diferentes: el dominio sirve como dirección, el DNS indica hacia dónde debe dirigirse esa dirección y el hosting proporciona la infraestructura que entrega la aplicación.
+El dominio es el nombre que identifica el sitio. Un subdominio es una parte del dominio, por ejemplo `app.ejemplo.com`. El hosting es la infraestructura que almacena, ejecuta o sirve la aplicación. Pueden contratarse por separado porque son servicios distintos: el registrador administra el nombre, DNS resuelve el nombre y el hosting entrega la aplicación.
 
 ---
 
 ## 2. DNS
 
-DNS significa **Domain Name System**. Su función principal es convertir nombres fáciles de recordar, como `github.com`, en información que los equipos pueden utilizar, principalmente direcciones IP. Por eso se suele comparar con una agenda de contactos de Internet.
+DNS significa **Domain Name System**. Convierte nombres fáciles de recordar, como `github.com`, en información utilizable por los equipos, principalmente direcciones IP. Por eso se compara con una agenda de contactos de Internet.
 
-### Jerarquía DNS
+### Jerarquía
 
-La consulta puede recorrer una jerarquía formada por:
-
-1. **Root servers:** indican dónde encontrar los servidores responsables de cada TLD.
-2. **TLD servers:** conocen los servidores autoritativos de extensiones como `.com` o `.co`.
-3. **Servidores autoritativos:** contienen la información oficial de un dominio.
-4. **Resolver recursivo:** realiza las consultas necesarias y normalmente guarda las respuestas en caché.
+1. **Root servers:** orientan la consulta hacia el TLD correspondiente.
+2. **TLD servers:** indican qué servidores son autoritativos para un dominio.
+3. **Servidores autoritativos:** contienen la información oficial de la zona.
+4. **Resolver recursivo:** realiza las consultas y normalmente almacena respuestas en caché.
 
 ### Registros DNS
 
-#### A
+| Registro | Para qué sirve | Ejemplo |
+|---|---|---|
+| `A` | Nombre → IPv4 | `@ A 203.0.113.10` |
+| `AAAA` | Nombre → IPv6 | `@ AAAA 2001:db8::10` |
+| `CNAME` | Alias de otro nombre | `www CNAME ejemplo.com` |
+| `ALIAS/ANAME` | Comportamiento tipo alias en el dominio raíz, según proveedor | `@ ALIAS app.ejemplo.com` |
+| `MX` | Servidores que reciben correo | `@ MX 10 mail.ejemplo.com` |
+| `TXT` | Verificaciones y políticas de texto | `@ TXT "v=spf1 include:_spf.ejemplo.com ~all"` |
+| `NS` | Nameservers autoritativos | `@ NS ns1.proveedor.com` |
+| `SOA` | Información principal de la zona | servidor, responsable, serial y timers |
 
-Relaciona un nombre con una dirección IPv4.
+`ALIAS` y `ANAME` son mecanismos que algunos proveedores ofrecen para resolver una limitación del CNAME tradicional en el dominio raíz; no son exactamente el mismo registro y su soporte depende del proveedor.
 
-Ejemplo:
+Los `TXT` se usan, entre otras cosas, para SPF, DKIM y verificaciones de propiedad de dominio. SPF indica servidores autorizados para enviar correo y DKIM publica la clave que permite verificar una firma de correo.
 
-```text
-@  A  203.0.113.10
-```
+### TTL y propagación
 
-#### AAAA
+**TTL (Time To Live)** indica cuánto tiempo una respuesta DNS puede permanecer en caché. Por ejemplo, un TTL de 3600 segundos permite aproximadamente una hora de caché. Un TTL alto reduce consultas pero puede retrasar la aplicación de cambios.
 
-Hace una función parecida al registro A, pero utilizando una dirección IPv6.
-
-```text
-@  AAAA  2001:db8::10
-```
-
-#### CNAME
-
-Hace que un nombre sea un alias de otro nombre de dominio.
-
-```text
-www  CNAME  ejemplo.com
-```
-
-#### ALIAS / ANAME
-
-Son mecanismos ofrecidos por algunos proveedores para conseguir un comportamiento parecido a un alias en el dominio raíz. Son útiles porque un CNAME tradicional tiene restricciones para usarse en el apex o dominio raíz. La disponibilidad exacta depende del proveedor DNS.
-
-#### MX
-
-Indica qué servidores reciben correo electrónico para el dominio.
-
-```text
-@  MX  10  mail.ejemplo.com
-```
-
-#### TXT
-
-Guarda texto asociado al dominio. Se usa, entre otras cosas, para verificaciones de propiedad y políticas de correo como SPF y DKIM.
-
-Ejemplo de SPF:
-
-```text
-@  TXT  "v=spf1 include:_spf.ejemplo.com ~all"
-```
-
-También se pueden publicar valores TXT proporcionados por un servicio para demostrar que se controla un dominio.
-
-#### NS
-
-Indica cuáles son los servidores DNS autoritativos de un dominio.
-
-```text
-@  NS  ns1.proveedor-dns.com
-```
-
-#### SOA
-
-El registro SOA contiene información principal de la zona DNS, como el servidor autoritativo principal, el responsable de la zona y valores utilizados para sincronización y caché.
-
-### TTL
-
-TTL significa **Time To Live**. Indica durante cuánto tiempo una respuesta DNS puede permanecer almacenada en caché. Si un registro tiene un TTL de 3600 segundos, un resolver puede conservar esa respuesta durante aproximadamente una hora antes de volver a consultarla.
-
-### Propagación DNS
-
-Cuando se cambia un registro DNS, diferentes resolvers pueden seguir teniendo la respuesta anterior mientras su TTL no haya terminado. Por eso el cambio no aparece de forma instantánea para todas las personas. La actualización depende del TTL, de las cachés y de la configuración del proveedor. No existe un tiempo universal exacto para todos los cambios.
+La **propagación DNS** ocurre porque diferentes resolvers y dispositivos pueden conservar respuestas anteriores hasta que vencen sus cachés. Por eso un cambio puede verse rápido en un lugar y más tarde en otro. No existe un tiempo universal exacto para todos los cambios.
 
 ### Ejercicio práctico
 
-Estos son los comandos solicitados por el taller:
+El taller solicita:
 
 ```bash
 nslookup github.io
@@ -144,49 +89,54 @@ dig github.com MX
 dig +trace anthropic.com
 ```
 
-En Windows, si no tengo `dig`, puedo usar:
+En Windows, si no está instalado `dig`:
 
 ```bash
 nslookup -type=MX github.com
 ```
 
-**Salida real pendiente:** debo ejecutar los comandos en mi computador y pegar aquí la salida o una captura. No se debe presentar una salida inventada como si hubiera sido ejecutada localmente.
+**Evidencia:** el entorno usado para preparar este documento no tiene `nslookup` ni `dig` instalados y no pudo realizar consultas DNS externas. Por eso no invento una salida como si hubiera sido ejecutada en mi computador. Antes de entregar al profesor debo ejecutar los comandos en mi PC y pegar la salida o una captura real.
+
+Comprobación del entorno:
+
+```text
+nslookup: command not found
+dig: command not found
+```
 
 ---
 
 ## 3. Dominios
 
-### Registrador, proveedor DNS y hosting
+### Registrador, DNS y hosting
 
-Un **registrador** es una empresa mediante la cual se registra un nombre de dominio. Un **proveedor DNS** administra la zona DNS y responde las consultas relacionadas con el dominio. Un **hosting** proporciona el lugar donde se ejecuta o almacena el sitio.
+Un **registrador** permite registrar el nombre de dominio. Un **proveedor DNS** administra los registros y responde consultas. El **hosting** proporciona la infraestructura que sirve el sitio. Una empresa puede ofrecer los tres servicios, pero cumplen funciones diferentes.
 
-Una misma empresa puede ofrecer los tres servicios, pero técnicamente no son lo mismo.
+### TLD
 
-### TLD genéricos y de código de país
-
-Los TLD genéricos incluyen extensiones como `.com`, `.dev` y `.app`. Los TLD de código de país representan territorios, por ejemplo `.co` para Colombia. Algunas extensiones pueden tener reglas específicas de registro o requisitos establecidos por su registro correspondiente.
-
-`.com.co` es una extensión de segundo nivel relacionada con Colombia y tiene condiciones y precios propios del registrador.
+Los TLD genéricos incluyen `.com`, `.dev` y `.app`. Los de código de país incluyen `.co` para Colombia. Algunas extensiones tienen requisitos específicos. `.com.co` también tiene condiciones propias.
 
 ### WHOIS y privacidad
 
-WHOIS es un sistema utilizado para consultar información asociada a un registro de dominio. La privacidad de dominio busca evitar que determinados datos personales del registrante queden expuestos públicamente. Las políticas concretas dependen de la extensión y del registrador.
+WHOIS permite consultar información relacionada con registros de dominios. La privacidad de dominio busca reducir la exposición pública de datos personales del registrante cuando la extensión y el registrador lo permiten.
 
 ### Nameservers
 
-Los **nameservers** son los servidores que indican dónde se encuentra la información DNS autoritativa de un dominio. “Apuntar el dominio a otro proveedor” normalmente significa cambiar los nameservers o modificar los registros DNS para que las consultas lleguen al servicio que se quiere utilizar.
+Los nameservers son los servidores DNS autoritativos de un dominio. “Apuntar el dominio a otro proveedor” puede significar cambiar los nameservers o modificar registros para dirigir las consultas al proveedor elegido.
 
 ### Precios consultados
 
-Los precios cambian con promociones, impuestos y condiciones del registrador, por lo que se deben comprobar antes de comprar.
+Los precios cambian por promociones, impuestos y condiciones. En la consulta actual de Namecheap:
 
-En la consulta realizada a Namecheap, un `.com` aparece con precio de registro de **US$11.28** y renovación de **US$18.48**. Namecheap también muestra una promoción de primer año de US$6.79 para nuevos clientes. urlNamecheap .comhttps://www.namecheap.com/domains/registration/gtld/com/
+| TLD | Registro | Renovación |
+|---|---:|---:|
+| `.com` | US$11.28 | US$18.48 |
+| `.co` | US$7.98 promocional | US$45.48 |
+| `.com.co` | US$19.48 | US$26.48 |
 
-Para `.co`, Namecheap muestra **US$7.98** como precio promocional del primer año y **US$45.48** para renovación. urlNamecheap .cohttps://www.namecheap.com/domains/registration/cctld/co/
+Namecheap también muestra una promoción de `.com` de US$6.79 para nuevos clientes. La renovación suele ser más alta porque las promociones se aplican al primer año y después se cobra la tarifa normal del TLD.
 
-En `.com.co`, la página consultada muestra **US$19.48** para registro y **US$26.48** para renovación. urlNamecheap .com.cohttps://www.namecheap.com/domains/registration/cctld/com-co/
-
-El precio del primer año puede ser menor porque el registrador aplica promociones para captar nuevos clientes. La renovación suele utilizar el precio normal del registro y puede ser diferente entre TLD.
+Fuentes: [Namecheap .com](https://www.namecheap.com/domains/registration/gtld/com/), [Namecheap .co](https://www.namecheap.com/domains/registration/cctld/co/), [Namecheap .com.co](https://www.namecheap.com/domains/registration/cctld/com-co/).
 
 ---
 
@@ -194,210 +144,179 @@ El precio del primer año puede ser menor porque el registrador aplica promocion
 
 ### TLS/SSL
 
-TLS es el protocolo que protege la comunicación entre el navegador y el servidor. Su función principal es proporcionar cifrado, integridad de los datos y autenticación del servidor mediante certificados. SSL es el nombre histórico de una tecnología anterior; actualmente se utiliza TLS.
+TLS protege la comunicación entre navegador y servidor mediante cifrado, integridad y autenticación del servidor. SSL es el nombre histórico de una tecnología anterior; actualmente se utiliza TLS.
 
-### Autoridad Certificadora y Let's Encrypt
+### CA y Let's Encrypt
 
-Una **Autoridad Certificadora (CA)** es una entidad que emite certificados digitales después de realizar las comprobaciones correspondientes. **Let's Encrypt** es una CA que proporciona certificados TLS de forma automatizada.
+Una **Autoridad Certificadora (CA)** emite certificados digitales después de realizar las validaciones correspondientes. **Let's Encrypt** es una CA que automatiza certificados TLS.
 
 ### DV, OV y EV
 
-- **DV:** comprueba principalmente el control sobre el dominio.
-- **OV:** añade comprobaciones sobre la organización solicitante.
-- **EV:** aplica un proceso de validación de identidad organizacional más amplio.
+- **DV:** valida principalmente el control del dominio.
+- **OV:** añade validación de la organización.
+- **EV:** realiza una validación organizacional más amplia.
 
-La diferencia principal está en el nivel de validación realizado por la CA, no en que uno cifre y otro no.
+La diferencia está en la validación realizada, no en que solo uno cifre.
 
-### Certificado wildcard
+### Wildcard
 
-Un certificado wildcard permite proteger un dominio y múltiples subdominios de un nivel. Por ejemplo, un certificado para `*.ejemplo.com` puede cubrir `app.ejemplo.com` y `www.ejemplo.com`.
+Un certificado wildcard como `*.ejemplo.com` puede cubrir varios subdominios de un nivel, por ejemplo `app.ejemplo.com` y `www.ejemplo.com`.
 
-### Error de certificado para el nombre
+### Certificado no válido para el nombre
 
-El error “certificado no válido para este nombre” aparece cuando el nombre que se visita no coincide con los nombres para los que fue emitido el certificado. Puede ocurrir, por ejemplo, si se configura un dominio personalizado pero el certificado todavía no incluye ese dominio o el DNS apunta a un sitio diferente.
+Aparece cuando el nombre visitado no coincide con los nombres incluidos en el certificado. Puede ocurrir al configurar un dominio personalizado cuando el certificado todavía no incluye el dominio o cuando el DNS apunta al servicio equivocado.
 
 ### HSTS
 
-HSTS significa **HTTP Strict Transport Security**. Es una política que indica al navegador que debe utilizar HTTPS para el sitio durante el período indicado. Ayuda a evitar que el usuario vuelva a una conexión HTTP insegura.
+**HTTP Strict Transport Security (HSTS)** indica al navegador que debe utilizar HTTPS durante el periodo indicado. Ayuda a evitar conexiones posteriores por HTTP.
+
+Fuente: [Let's Encrypt FAQ](https://letsencrypt.org/es/docs/faq/).
 
 ---
 
 ## 5. Modelos de alojamiento
 
-| Modelo | Ejemplos | Ventajas | Desventajas | Cuándo usarlo |
+| Modelo | Ejemplos | Ventajas | Desventajas | ¿Cuándo usarlo? |
 |---|---|---|---|---|
-| Hosting compartido | Hostinger, cPanel | Económico y sencillo | Recursos compartidos y menos control | Sitios pequeños |
-| VPS | DigitalOcean Droplet, Linode, AWS EC2 | Más control y recursos dedicados virtualmente | Requiere más administración | Aplicaciones que necesitan configurar servidor |
-| Servidor dedicado | OVH, Hetzner | Recursos exclusivos y mucho control | Mayor costo y administración | Sistemas con necesidades altas |
-| PaaS | Render, Railway, Heroku, Fly.io | Despliegue sencillo sin administrar todo el servidor | Dependencia de la plataforma | Aplicaciones web y APIs |
-| Serverless / Functions | Vercel Functions, AWS Lambda, Supabase Edge Functions | Escala según peticiones y evita administrar servidores tradicionales | Límites y modelo de ejecución específico | APIs y tareas puntuales |
-| Hosting estático + CDN | GitHub Pages, Netlify, Cloudflare Pages, Vercel | Muy apropiado para React compilado, rápido y sencillo | No ejecuta un backend tradicional por sí solo | Frontends estáticos |
-| BaaS | Supabase, Firebase, Appwrite | Ofrece servicios de backend listos para usar | Dependencia del proveedor | Apps que necesitan Auth, BD, Storage o Realtime |
+| Hosting compartido | Hostinger, cPanel | Económico y sencillo | Recursos compartidos | Sitios pequeños |
+| VPS | DigitalOcean, Linode, AWS EC2 | Más control | Más administración | Apps que necesitan servidor configurable |
+| Servidor dedicado | OVH, Hetzner | Recursos exclusivos | Costoso | Sistemas de alta demanda |
+| PaaS | Render, Railway, Heroku, Fly.io | Despliegue fácil | Dependencia de plataforma | Apps web y APIs |
+| Serverless / Functions | Vercel Functions, AWS Lambda, Supabase Edge Functions | No se administra servidor tradicional | Límites del modelo | APIs y tareas puntuales |
+| Hosting estático + CDN | GitHub Pages, Netlify, Cloudflare Pages, Vercel | Rápido y sencillo | No reemplaza backend tradicional | Frontends React |
+| BaaS | Supabase, Firebase, Appwrite | Auth, BD, Storage y otros servicios | Dependencia del proveedor | Apps con backend administrado |
 
 ### CDN
 
-Un CDN distribuye archivos desde servidores ubicados en diferentes lugares. Así el usuario puede recibir los recursos desde un punto cercano. Esto reduce la latencia y también disminuye la carga que tendría que soportar el servidor de origen.
+Un CDN distribuye contenido desde servidores cercanos al usuario. Reduce latencia, acelera la entrega y disminuye la carga del servidor de origen.
 
-### Sitio estático y sitio dinámico
+### Estático vs dinámico
 
-Un sitio **estático** entrega archivos ya generados, como HTML, CSS y JavaScript. Un sitio dinámico o renderizado en servidor genera parte del contenido en respuesta a la solicitud del usuario.
-
-Una aplicación React creada con Vite termina, después de `npm run build`, en archivos estáticos dentro de `dist`. Por eso puede publicarse en servicios de hosting estático.
+Un sitio estático entrega archivos ya generados. Uno dinámico o renderizado en servidor puede generar contenido al recibir la petición. React con Vite, después de `npm run build`, produce archivos estáticos en `dist`, por lo que puede publicarse en hosting estático.
 
 ### SPA
 
-Una **SPA (Single Page Application)** carga una aplicación principal y cambia el contenido mediante JavaScript sin recargar toda la página. En un hosting estático puede aparecer un 404 al recargar una ruta como `/dashboard`, porque el servidor busca un archivo llamado `dashboard` y no entiende que esa ruta pertenece a la SPA.
-
-En GitHub Pages una solución sencilla para el taller es utilizar `HashRouter`, porque la parte después de `#` no se envía al servidor.
+Una **SPA** carga una aplicación principal y cambia las vistas con JavaScript. En un hosting estático, recargar `/dashboard` puede producir 404 porque el servidor busca un archivo `dashboard`. En GitHub Pages, `HashRouter` es una solución sencilla porque la parte después de `#` no se envía como ruta al servidor.
 
 ---
 
 ## 6. Comparativa de plataformas
 
-| Plataforma | Plan gratuito / límites principales | Variables de entorno | SPA | Backend / funciones | Dominio personalizado / HTTPS | Preview deployments |
+| Plataforma | Gratis / límites principales | Variables de entorno | SPA | Backend / funciones | Dominio + HTTPS | Preview deployments |
 |---|---|---|---|---|---|---|
-| GitHub Pages | Sitio publicado hasta 1 GB y límite flexible de 100 GB/mes | Sí mediante Actions/secrets para el proceso de build | Requiere configuración para rutas internas | No es backend tradicional | Sí / HTTPS | No es su punto fuerte; Actions puede manejar flujos de preview |
-| Netlify | Free con 300 créditos mensuales | Sí | Sí, con configuración de redirects cuando sea necesaria | Sí, Functions | Sí / SSL | Sí, previews ilimitadas según su plan Free actual |
-| Vercel | Hobby gratuito; incluye 100 GB/mes de transferencia rápida y límites de builds | Sí | Sí | Sí, Functions | Sí / HTTPS automático | Sí, despliegues de preview por cambios Git |
-| Cloudflare Pages | Free con 500 builds/mes, 1 build simultáneo y hasta 20.000 archivos por sitio | Sí | Sí, según configuración del proyecto | Sí, mediante Pages Functions/Workers | Sí | Sí, previews ilimitadas |
-| Render | Static Sites gratis; el plan Hobby tiene límites de uso | Sí | Sí | Sí, web services y otras opciones | Sí / TLS administrado | Sí, según el tipo de servicio |
+| GitHub Pages | Sitio publicado hasta 1 GB; límite flexible de 100 GB/mes | Sí, mediante Actions/secrets | Requiere estrategia para rutas internas | No backend tradicional | Sí / HTTPS | Actions puede implementarlo, no es su función principal |
+| Netlify | Free con 300 créditos/mes según su página actual | Sí | Sí, con redirects cuando se necesitan | Sí, Functions | Sí / SSL | Sí, previews ilimitadas en Free según página actual |
+| Vercel | Hobby gratuito, con límites de uso | Sí | Sí | Sí, Functions | Sí / HTTPS | Sí |
+| Cloudflare Pages | Free: 500 builds/mes, 1 build simultáneo, 20.000 archivos por sitio y 25 MiB por archivo | Sí | Sí | Sí, Pages Functions/Workers | Sí | Sí, previews para pull requests |
+| Render | Static Sites gratis; otros servicios tienen límites de uso | Sí | Sí | Sí | Sí / TLS administrado | Sí, según servicio |
 
-Las cifras anteriores son las consultadas en la documentación oficial. GitHub Pages publica límites de 1 GB por sitio y 100 GB/mes de ancho de banda flexible. urlLímites de GitHub Pageshttps://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
+Fuentes oficiales: [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits), [Netlify](https://www.netlify.com/pricing/), [Vercel](https://vercel.com/docs/limits), [Cloudflare Pages](https://developers.cloudflare.com/pages/platform/limits/), [Render](https://render.com/pricing).
 
-Netlify ofrece actualmente un plan Free con 300 créditos mensuales, dominios personalizados con SSL y previews ilimitadas. urlPrecios de Netlifyhttps://www.netlify.com/pricing/
+### ¿Cuál elegiría para mi proyecto?
 
-Vercel tiene un plan Hobby gratuito, con 100 GB de transferencia rápida mensual y previews por cada push de Git. urlPlan Hobby de Vercelhttps://vercel.com/docs/plans/hobby
-
-Cloudflare Pages Free permite 500 builds al mes, 20.000 archivos por sitio y despliegues de preview ilimitados. urlLímites de Cloudflare Pageshttps://developers.cloudflare.com/pages/platform/limits/
-
-Render ofrece Static Sites gratuitos, despliegues automáticos desde Git y dominios personalizados con TLS administrado. urlPrecios de Renderhttps://render.com/pricing
-
-### ¿Cuál elegiría para RECORDATE?
-
-Para mi proyecto elegiría **GitHub Pages + Supabase** si el objetivo principal es cumplir el taller y publicar el frontend de React de forma sencilla. GitHub Pages sirve muy bien para archivos estáticos y el backend que necesita RECORDATE puede estar en Supabase. Si necesitara más funciones de backend integradas en el mismo proveedor, consideraría Vercel o Netlify.
+Elegiría **GitHub Pages + GitHub Actions + Supabase**. El proyecto React con Vite se convierte en archivos estáticos, el repositorio ya está en GitHub y Actions permite automatizar el build. Supabase aporta autenticación y base de datos. Para un proyecto escolar es una combinación que permite practicar React, Git, CI/CD, variables de entorno y RLS sin administrar un servidor propio.
 
 ---
 
 ## 7. Supabase en producción
 
-### ¿Qué es un BaaS?
+### BaaS
 
-BaaS significa **Backend as a Service**. Es un servicio que proporciona componentes de backend sin que el desarrollador tenga que construir y administrar todo desde cero.
+Un **BaaS (Backend as a Service)** ofrece servicios de backend administrados. Supabase incluye PostgreSQL, Auth, Storage, Realtime y Edge Functions, además de APIs y herramientas de administración.
 
-Supabase ofrece principalmente:
+### `anon key` vs `service_role`
 
-- **Postgres:** base de datos relacional.
-- **Auth:** autenticación y gestión de sesiones.
-- **Storage:** almacenamiento de archivos.
-- **Realtime:** comunicación de datos en tiempo real.
-- **Edge Functions:** funciones ejecutadas en el entorno de Supabase.
-
-### Claves de Supabase
-
-El taller utiliza los nombres tradicionales `anon` y `service_role`. Supabase está migrando hacia las claves **publishable** y **secret**, y documenta que las claves `anon` y `service_role` están siendo retiradas progresivamente hacia finales de 2026. urlSupabase API keyshttps://supabase.com/docs/guides/getting-started/api-keys
-
-La idea importante es:
-
-- La clave pública/publishable puede utilizarse desde el navegador.
-- La clave secreta/service role tiene permisos elevados y **no debe enviarse al frontend**.
-- La seguridad de los datos no depende de esconder la clave pública, sino de configurar correctamente las reglas de acceso.
+La **anon key** está pensada para aplicaciones cliente y puede terminar visible en el navegador. La **service_role key** tiene permisos elevados y puede saltarse RLS, por lo que **jamás debe ir al frontend ni a una variable `VITE_`**. Debe permanecer del lado del servidor.
 
 ### RLS
 
-RLS significa **Row Level Security**. Permite definir qué filas puede consultar o modificar cada usuario. Es especialmente importante cuando el navegador se conecta directamente a Supabase.
+**Row Level Security (RLS)** permite controlar qué filas puede leer o modificar cada usuario. Es fundamental cuando el cliente usa una clave pública desde el navegador.
 
-Ejemplo conceptual para que un usuario solo pueda leer sus propias filas:
+Ejemplo con una tabla `perfiles` y una columna `user_id`:
 
 ```sql
-create policy "Usuarios pueden leer sus propias filas"
-on public.actividades
+alter table public.perfiles enable row level security;
+
+create policy "Cada usuario puede leer su perfil"
+on public.perfiles
 for select
 to authenticated
-using (usuario_id = auth.uid());
-```
+using (auth.uid() = user_id);
 
-Para permitir edición únicamente de sus propias filas se puede aplicar una política similar al `update`:
-
-```sql
-create policy "Usuarios pueden editar sus propias filas"
-on public.actividades
+create policy "Cada usuario puede editar su perfil"
+on public.perfiles
 for update
 to authenticated
-using (usuario_id = auth.uid())
-with check (usuario_id = auth.uid());
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
 ```
 
-La columna `usuario_id` debe estar relacionada con el usuario autenticado y las políticas deben adaptarse a la estructura real de la base de datos.
+Así la política compara el usuario autenticado con el dueño de la fila. También se deben revisar los grants de la tabla, porque las políticas no sustituyen los permisos de PostgreSQL.
 
 ### Site URL y Redirect URLs
 
-Supabase Auth necesita saber cuáles URLs están permitidas después de una autenticación. La **Site URL** funciona como URL predeterminada cuando no se especifica otra redirección. Las **Redirect URLs** permiten definir destinos válidos para los flujos de autenticación. Si se deja la URL de desarrollo y se publica la aplicación en otra dirección, un login puede intentar regresar a `localhost` o ser rechazado. urlSupabase Redirect URLshttps://supabase.com/docs/guides/auth/redirect-urls
+En Supabase → Authentication → URL Configuration se debe configurar la URL real. Para este repositorio, si se publica como project site:
 
-### Límites del plan Free
+```text
+Site URL:
+https://Blandon104.github.io/WorkSpace/
 
-Actualmente Supabase indica que el plan Free incluye 2 proyectos, 500 MB de base de datos por proyecto, 5 GB de egress, 1 GB de almacenamiento y 50.000 usuarios activos mensuales. También puede pausar proyectos Free después de una semana de poca actividad. urlPrecios de Supabasehttps://supabase.com/pricing urlPausa de proyectos Free de Supabasehttps://supabase.com/docs/guides/platform/free-project-pausing
+Redirect URLs:
+https://Blandon104.github.io/WorkSpace/**
+http://localhost:5173/**
+```
+
+Si no se configura la URL de producción, confirmaciones de correo, recuperación de contraseña u OAuth pueden regresar a `localhost` o ser rechazados.
+
+Fuentes: [Supabase Redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls) y [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
+
+### Plan gratuito
+
+La información actual consultada indica que Free incluye 500 MB de base de datos, 5 GB de egress, 5 GB de cached egress, 1 GB de almacenamiento de archivos, 50.000 MAU y hasta 2 proyectos activos. Los proyectos Free pueden pausarse después de aproximadamente una semana de poca actividad. Estos límites pueden cambiar y deben revisarse antes de una entrega.
+
+Fuentes: [Supabase Pricing](https://supabase.com/pricing/) y [Project Pausing](https://supabase.com/docs/guides/platform/free-project-pausing).
 
 ---
 
 ## 8. Variables de entorno y seguridad
 
-Una **variable de entorno** permite guardar una configuración fuera del código fuente. En un proyecto React con Vite se pueden utilizar variables como:
+Una **variable de entorno** guarda configuración que se entrega al proceso durante desarrollo o despliegue. `.env` se agrega normalmente a `.gitignore` para no subir configuraciones locales o secretos.
+
+En Vite, las variables que deben estar disponibles en el código cliente usan el prefijo `VITE_`. Todo lo que tenga ese prefijo puede terminar dentro del bundle y ser visible al usuario.
+
+Ejemplo:
 
 ```env
-VITE_SUPABASE_URL=https://mi-proyecto.supabase.co
-VITE_SUPABASE_ANON_KEY=mi-clave-publica
+VITE_SUPABASE_URL=https://xxxxxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
 ```
 
-El archivo `.env` normalmente se agrega a `.gitignore` para evitar publicar valores que no deben almacenarse en el repositorio.
+Una `service_role` nunca debe ponerse ahí.
 
-### ¿Por qué `VITE_`?
+**GitHub Secrets** son valores protegidos que Actions puede inyectar durante un build. Un secreto de **runtime** permanece en un servidor y se usa cuando el backend se ejecuta.
 
-Vite expone al código del navegador las variables que comienzan por `VITE_`. Esto significa que cualquier valor con ese prefijo termina dentro del bundle público y **no debe considerarse un secreto**. urlVariables de entorno de Vitehttps://vite.dev/guide/env-and-mode
-
-### GitHub Secrets y secretos de runtime
-
-Un secreto de GitHub Actions puede utilizarse durante un build sin escribirlo directamente en el archivo del workflow. Un secreto de runtime es un valor que permanece protegido en un servidor y solo se utiliza cuando el backend ejecuta una operación.
-
-Una clave que termine en el JavaScript del navegador deja de ser secreta, aunque se haya guardado originalmente como GitHub Secret.
-
-### Si se sube una clave por error
-
-No basta con borrar el archivo o hacer otro commit. Si una clave secreta fue publicada, debe **revocarse o rotarse** y después actualizar el sistema con la nueva clave. También conviene revisar el historial del repositorio.
+Si una clave secreta se sube por error a Git, borrar el archivo no basta: hay que **rotar/revocar la clave**, actualizar la configuración y revisar el historial. Una `service_role` expuesta debe tratarse como comprometida.
 
 ---
 
 ## 9. Build y despliegue
 
-### `npm run build`
+`npm run build` ejecuta el proceso de compilación y Vite genera normalmente `dist/`.
 
-El comando ejecuta el script de build definido en `package.json`. En un proyecto Vite normalmente transforma el código fuente en una versión optimizada para producción.
+- **Minificación:** reduce el tamaño del código.
+- **Tree shaking:** elimina código no utilizado.
+- **Code splitting:** divide el código en varios archivos.
+- **Hashing:** añade identificadores a nombres de archivos para controlar caché.
 
-La carpeta **`dist/`** contiene los archivos finales que se pueden publicar: HTML, JavaScript, CSS, imágenes y otros recursos generados.
+**CI** automatiza integración, instalación, pruebas y builds. **CD** automatiza la entrega o publicación. **GitHub Actions** permite ejecutar esos pasos ante eventos como un `push` a `main`.
 
-### Conceptos del proceso de build
-
-- **Minificación:** reduce el tamaño de los archivos eliminando espacios y simplificando el código cuando es posible.
-- **Tree shaking:** elimina código que no se utiliza.
-- **Code splitting:** separa el código en diferentes archivos para cargar solamente lo necesario cuando la aplicación lo permite.
-- **Hashing:** agrega identificadores al nombre de archivos para ayudar con el control de caché.
-
-### CI/CD
-
-CI/CD significa integración y entrega/despliegue continuo. La idea es automatizar tareas como instalar dependencias, probar, construir y publicar el proyecto.
-
-**GitHub Actions** permite crear workflows automatizados dentro del repositorio. Puede ejecutar un build cada vez que se hace push y después publicar el resultado. urlGitHub Actionshttps://docs.github.com/en/actions
-
-### `gh-pages` vs GitHub Actions
-
-Con `gh-pages`, el proyecto puede publicar el contenido generado en una rama destinada a GitHub Pages. Con GitHub Actions se puede automatizar todo el proceso en un workflow: instalar dependencias, ejecutar el build, guardar el artefacto y desplegarlo. GitHub recomienda el flujo de Actions para automatizar publicaciones de Pages. urlPublicación de GitHub Pages con Actionshttps://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+Una rama `gh-pages` publica archivos generados desde una rama. Un workflow de Actions mantiene el código fuente y automatiza instalación, build y publicación. Para este taller prefiero Actions porque es repetible y se integra con el repositorio.
 
 ---
 
-# Parte 2 — Publicar React + Supabase en GitHub Pages
+# Parte 2 — Tutorial: publicar React + Supabase en GitHub Pages
 
-## Paso 0 — Comprobar que el proyecto compila
-
-En la carpeta del proyecto:
+## Paso 0 — Verificar compilación
 
 ```bash
 npm install
@@ -405,29 +324,27 @@ npm run build
 npm run preview
 ```
 
-Si `npm run build` falla, primero hay que solucionar el error. `npm run preview` permite comprobar el resultado real del build antes de publicarlo.
+Si `npm run build` falla, primero hay que corregir el error. `preview` permite revisar el resultado real del build.
 
----
+## Paso 1 — URL del proyecto
 
-## Paso 1 — Determinar la URL de GitHub Pages
-
-Si el repositorio es un repositorio normal, la URL tiene esta estructura:
+Para un repositorio `usuario/mi-proyecto`:
 
 ```text
-https://usuario.github.io/nombre-del-repositorio/
+https://usuario.github.io/mi-proyecto/
 ```
 
-Por ejemplo, si el repositorio se llama `recordate`, la URL sería parecida a:
+Para `usuario.github.io`, la URL queda en la raíz.
+
+En este repositorio, si se publica como project site, la URL esperada es:
 
 ```text
-https://usuario.github.io/recordate/
+https://Blandon104.github.io/WorkSpace/
 ```
 
-En ese caso, Vite necesita conocer que la aplicación vive debajo de `/recordate/`.
+La URL solo será válida después de activar Pages y completar un deployment.
 
----
-
-## Paso 2 — Configurar `base` en Vite
+## Paso 2 — `base` de Vite
 
 En `vite.config.js`:
 
@@ -437,52 +354,50 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/nombre-del-repositorio/',
+  base: '/WorkSpace/',
 })
 ```
 
-El nombre debe coincidir exactamente con el repositorio. Si se deja `/` cuando la aplicación realmente vive en `/nombre-del-repositorio/`, los archivos JavaScript y CSS pueden buscarse en una ruta incorrecta y la página puede aparecer en blanco.
+Después:
 
----
+```bash
+npm run build
+```
 
-## Paso 3 — Resolver el problema de las rutas SPA
+En `dist/index.html` las rutas de los assets deben incluir `/WorkSpace/`.
 
-Para el taller, una opción sencilla es `HashRouter`:
+## Paso 3 — Router de la SPA
+
+### Opción A: HashRouter
 
 ```jsx
 import { HashRouter } from 'react-router-dom'
 
-function App() {
-  return (
-    <HashRouter>
-      {/* rutas de la aplicación */}
-    </HashRouter>
-  )
-}
-
-export default App
+<HashRouter>
+  <App />
+</HashRouter>
 ```
 
-La URL queda con una estructura como:
+Las URLs quedan como `https://Blandon104.github.io/WorkSpace/#/dashboard`.
 
-```text
-https://usuario.github.io/mi-proyecto/#/dashboard
+### Opción B: BrowserRouter + 404.html
+
+```jsx
+<BrowserRouter basename="/WorkSpace">
 ```
 
-El fragmento después de `#` no se envía al servidor, por lo que GitHub Pages no intenta buscar un archivo llamado `dashboard`.
-
----
+También se puede generar `404.html` a partir de `index.html` para que GitHub Pages devuelva la SPA al solicitar rutas internas.
 
 ## Paso 4 — Variables de Supabase
 
-En local se puede tener un `.env`:
+`.env` local:
 
 ```env
 VITE_SUPABASE_URL=https://xxxxxxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
 ```
 
-Y el cliente de Supabase:
+Cliente:
 
 ```js
 import { createClient } from '@supabase/supabase-js'
@@ -493,31 +408,19 @@ export const supabase = createClient(
 )
 ```
 
-Para GitHub Actions, los valores pueden guardarse como secretos del repositorio y utilizarse durante el build.
+En GitHub: `Settings` → `Secrets and variables` → `Actions` → crear `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
 
-**Importante:** `VITE_SUPABASE_ANON_KEY` es una clave pública para el frontend; la clave secreta/service role nunca debe incluirse en el bundle.
+La anon key seguirá siendo visible en el frontend. La seguridad depende de RLS, no de esconder esa clave.
 
----
+## Paso 5 — Activar Pages
 
-## Paso 5 — Activar GitHub Pages con Actions
+Repositorio → `Settings` → `Pages` → **Source: GitHub Actions**.
 
-En GitHub:
+GitHub Pages permite HTTPS y se puede forzar HTTPS en el sitio.
 
-`Settings → Pages → Source → GitHub Actions`
+## Paso 6 — Workflow
 
-GitHub Pages puede utilizar un workflow que haga checkout del repositorio, construya los archivos, suba el artefacto y realice el despliegue. urlConfigurar fuente de publicación de GitHub Pageshttps://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
-
----
-
-## Paso 6 — Workflow de despliegue
-
-Crear:
-
-```text
-.github/workflows/deploy.yml
-```
-
-Ejemplo:
+Crear `.github/workflows/deploy.yml`:
 
 ```yaml
 name: Deploy to GitHub Pages
@@ -571,9 +474,7 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
----
-
-## Paso 7 — Subir los cambios
+## Paso 7 — Publicar
 
 ```bash
 git add .
@@ -581,33 +482,30 @@ git commit -m "chore: configurar despliegue en GitHub Pages"
 git push origin main
 ```
 
-Después se revisa la pestaña **Actions** para comprobar si el workflow terminó correctamente. La URL se puede consultar desde `Settings → Pages`.
+Después se revisa la pestaña **Actions** y `Settings` → `Pages`.
 
----
+## Paso 8 — Configurar Supabase
 
-## Paso 8 — Configurar Supabase para producción
-
-En Supabase se debe entrar a:
-
-`Authentication → URL Configuration`
-
-La **Site URL** debe ser la URL pública real del proyecto. Por ejemplo:
+En Authentication → URL Configuration:
 
 ```text
-https://usuario.github.io/mi-proyecto/
+Site URL:
+https://Blandon104.github.io/WorkSpace/
+
+Redirect URLs:
+https://Blandon104.github.io/WorkSpace/**
+http://localhost:5173/**
 ```
 
-También se deben agregar las Redirect URLs que realmente utilizará la aplicación. Supabase indica que la URL de producción es especialmente importante para confirmaciones por correo y recuperación de contraseña. urlSupabase Redirect URLshttps://supabase.com/docs/guides/auth/redirect-urls
+También se revisan las políticas RLS y se prueba la aplicación sin sesión para comprobar que los datos privados no sean accesibles.
 
-Además, las políticas RLS deben estar activas en las tablas que contengan datos de usuarios.
+## Paso 9 — Dominio personalizado
 
----
+1. Comprar el dominio.
+2. En GitHub Pages → Custom domain, introducirlo.
+3. Configurar DNS.
 
-## Paso 9 — Dominio personalizado (opcional)
-
-Si se compra un dominio propio, GitHub Pages permite configurar dominios apex y subdominios. urlDominios personalizados en GitHub Pageshttps://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages
-
-Para un subdominio como `www.midominio.com`, un registro habitual es:
+Para `www`:
 
 ```text
 Tipo: CNAME
@@ -615,7 +513,7 @@ Nombre: www
 Valor: usuario.github.io
 ```
 
-Para un dominio raíz se pueden utilizar los registros A indicados por GitHub Pages:
+Para el dominio raíz, GitHub Pages documenta estos registros `A`:
 
 ```text
 185.199.108.153
@@ -624,49 +522,104 @@ Para un dominio raíz se pueden utilizar los registros A indicados por GitHub Pa
 185.199.111.153
 ```
 
-GitHub Pages soporta HTTPS y permite activar **Enforce HTTPS** desde la configuración del sitio. urlHTTPS en GitHub Pageshttps://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https
+Después de la verificación y emisión del certificado se puede activar **Enforce HTTPS**. Con un dominio propio en la raíz, Vite normalmente usa `base: '/'`.
+
+---
+
+# Ejemplo aplicado a mi repositorio
+
+Mi repositorio es `Blandon104/WorkSpace`. El README explica que lo uso para practicar programación y mejorar mis habilidades. fileciteturn3file0L2-L6
+
+La estructura del entregable es:
+
+```text
+docs/
+└── despliegue.md
+```
+
+Flujo del frontend:
+
+```text
+React + Vite
+    ↓
+npm run build
+    ↓
+dist/
+    ↓
+GitHub Actions
+    ↓
+GitHub Pages
+    ↓
+Usuario
+```
+
+Flujo de datos:
+
+```text
+React en navegador
+       ↓
+Supabase anon key
+       ↓
+Auth + API
+       ↓
+PostgreSQL + RLS
+```
+
+La `service_role` no se publica en el navegador.
 
 ---
 
 # Errores frecuentes
 
-| Problema | Posible causa | Solución |
+| Síntoma | Causa probable | Solución |
 |---|---|---|
-| Página en blanco | `base` incorrecto | Usar el nombre exacto del repositorio en `vite.config.js` |
-| 404 al recargar `/dashboard` | Problema de SPA | Usar `HashRouter` o configurar una estrategia de `404.html` |
-| `supabaseUrl is required` | Variable no llegó al build | Revisar `.env` o los secrets de Actions |
-| Login devuelve a localhost | Site URL incorrecta | Cambiar URL Configuration en Supabase |
-| Error de CORS | URL no autorizada | Revisar la configuración de Supabase |
-| Datos visibles sin sesión | RLS mal configurado | Activar RLS y revisar las políticas |
-| Sitio no cambia después del deploy | Caché | Recargar con `Ctrl + Shift + R` |
+| Página en blanco / 404 en assets | `base` incorrecto | Usar `/WorkSpace/` |
+| 404 al recargar una ruta | Problema de SPA | `HashRouter` o `404.html` |
+| `supabaseUrl is required` | Secretos no llegaron al build | Revisar `env:` del workflow |
+| Login vuelve a localhost | Site URL incorrecta | Configurar URL de producción |
+| `Failed to fetch` | Configuración o dominio incorrecto | Revisar Supabase y navegador |
+| Datos visibles sin iniciar sesión | RLS o grants incorrectos | Activar RLS y políticas |
+| Sitio no se actualiza | Caché | `Ctrl + Shift + R` y revisar Actions |
 
 ---
 
-# Checklist de entrega
+# Evidencias que debo agregar antes de entregar
 
-- [ ] `docs/despliegue.md` está dentro del repositorio `workspace`.
-- [ ] Parte 1 respondida con mis propias palabras.
-- [ ] Fuentes consultadas incluidas.
-- [ ] Ejecuté `nslookup` y/o `dig` y pegué la salida real.
-- [ ] El proyecto compila con `npm run build`.
-- [ ] La aplicación está publicada.
-- [ ] La URL pública está configurada.
-- [ ] El workflow de GitHub Actions aparece en verde.
-- [ ] Supabase tiene configuradas la Site URL y Redirect URLs.
-- [ ] Las políticas RLS están activas.
+El taller exige ejemplos propios y evidencias. Antes de entregar al profesor debo añadir:
 
-## Fuentes principales
+1. Salida o captura real de `nslookup github.io`.
+2. Salida o captura real de `dig github.com A`.
+3. Salida o captura real de `dig github.com MX`.
+4. Salida o captura real de `dig +trace anthropic.com`.
+5. URL pública final del proyecto.
+6. Captura del workflow de Actions en verde.
+7. Captura de las políticas RLS activas en Supabase.
 
-- GitHub Pages: https://docs.github.com/en/pages
-- GitHub Actions: https://docs.github.com/en/actions
-- Vite: https://vite.dev/guide/env-and-mode
-- Supabase: https://supabase.com/docs
-- Supabase Auth Redirect URLs: https://supabase.com/docs/guides/auth/redirect-urls
-- Supabase API Keys: https://supabase.com/docs/guides/getting-started/api-keys
-- Supabase Pricing: https://supabase.com/pricing
-- Netlify Pricing: https://www.netlify.com/pricing/
-- Vercel Hobby: https://vercel.com/docs/plans/hobby
-- Cloudflare Pages Limits: https://developers.cloudflare.com/pages/platform/limits/
-- Render Pricing: https://render.com/pricing
-- Namecheap .com: https://www.namecheap.com/domains/registration/gtld/com/
-- Namecheap .co: https://www.namecheap.com/domains/registration/cctld/co/
+No inventé estas evidencias. La limitación del entorno de preparación impide ejecutar esas consultas como si fueran realizadas desde mi PC.
+
+---
+
+# Fuentes consultadas
+
+- [GitHub Pages — límites](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
+- [GitHub Pages — HTTPS](https://docs.github.com/es/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https)
+- [Netlify — precios](https://www.netlify.com/pricing/)
+- [Vercel — límites](https://vercel.com/docs/limits)
+- [Vercel — Hobby](https://vercel.com/docs/plans/hobby)
+- [Cloudflare Pages — límites](https://developers.cloudflare.com/pages/platform/limits/)
+- [Cloudflare Pages — previews](https://developers.cloudflare.com/pages/configuration/preview-deployments/)
+- [Render — precios](https://render.com/pricing)
+- [Supabase — precios](https://supabase.com/pricing/)
+- [Supabase — RLS](https://supabase.com/docs/guides/database/postgres/row-level-security)
+- [Supabase — Redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls)
+- [Supabase — pausa de proyectos Free](https://supabase.com/docs/guides/platform/free-project-pausing)
+- [Let's Encrypt — FAQ](https://letsencrypt.org/es/docs/faq/)
+- [Namecheap — .com](https://www.namecheap.com/domains/registration/gtld/com/)
+- [Namecheap — .co](https://www.namecheap.com/domains/registration/cctld/co/)
+- [Namecheap — .com.co](https://www.namecheap.com/domains/registration/cctld/com-co/)
+
+---
+
+# Conclusión
+
+Publicar una aplicación React requiere entender no solo cómo subir archivos, sino también DNS, dominios, HTTPS, hosting, CDN, build, variables de entorno y seguridad. En una aplicación con Supabase, RLS es fundamental porque el frontend se ejecuta en el navegador. Para mi proyecto escolar, GitHub Pages + Actions para el frontend y Supabase para backend y datos es una combinación sencilla para practicar un flujo real de desarrollo y despliegue.
